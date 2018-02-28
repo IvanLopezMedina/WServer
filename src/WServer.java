@@ -20,7 +20,7 @@ public class WServer {
         try{
             serverSocket = new ServerSocket(8111);
             String fileIndex = new String(Files.readAllBytes(Paths.get("java/files/index.html")));
-            String filetxt = new String(Files.readAllBytes(Paths.get("index.txt")));
+            String filetxt = new String(Files.readAllBytes(Paths.get("java/files/index.txt")));
             while(true){
                 //Client connection
                 clientSocket = serverSocket.accept();
