@@ -13,7 +13,7 @@ public class Conexio extends Thread {
 
         String header = in.readLine();
         //Read browser request
-
+            System.out.println(header);
         //Filter ASCI
         if (header.contains("asc=true")){
             System.out.println("ASCI CODE");
@@ -29,7 +29,6 @@ public class Conexio extends Thread {
         PrintWriter out = null;
         out = new PrintWriter(new OutputStreamWriter(os));
         //Control del thread
-        System.out.println(header);
 
         //Filtre de tipus d'arxiu
             out.println("HTTP/1.1 200 OK");
@@ -43,8 +42,14 @@ public class Conexio extends Thread {
                 out.println("Content-Type: text/html\n");
                 out.println(fileIndex);
             }
+            else if (header.contains(".png")) {
+                System.out.println("Png File: foto.png");
+                out.println("Content-Type: image/png\n");
+                out.println("Content-Disposition: filename='foto.png'");
+                out.println(fileIndex);
+            }
             else {
-
+                out.println("HTTP/1.1 404 Not Found");
             }
 
         //out.println("Content-Disposition: filename");

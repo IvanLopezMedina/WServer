@@ -29,11 +29,11 @@ public class WServer {
                 Conexio html;
                 html = new Conexio();
                 try {
-               html.run(clientSocket,fileIndex,filetxt,is,os,in);
-               html.join();
+                    html.run(clientSocket,fileIndex,filetxt,is,os,in);
+                    html.join();
                  }catch (Exception e){
-               e.printStackTrace();
-           }
+                    e.printStackTrace();
+                 }
             clientSocket.close();
             }
 
