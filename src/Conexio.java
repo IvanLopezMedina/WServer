@@ -45,7 +45,7 @@ public class Conexio extends Thread {
     public void not_found(OutputStream os){
         PrintWriter out = null;
         out = new PrintWriter(new OutputStreamWriter(os));
-        out.println("HTTP/1.1 200 OK");
+        //out.println("HTTP/1.1 200 OK");
         out.println("HTTP/1.1 404 Not Found");
         out.println("Fi transferencia");
         out.flush();
