@@ -14,23 +14,11 @@ public class WServer {
 
         ServerSocket serverSocket;
         Socket clientSocket;
-        FileInputStream fis = null;
-        File im = new File("java/files/D.png");
-        try {
-            fis = new FileInputStream(im);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        InputStream is = null;
-        OutputStream os = null;
-        BufferedReader in = null;
+
 
         try{
             serverSocket = new ServerSocket(8111);
-            String fileIndex = new String(Files.readAllBytes(Paths.get("java/files/index.html")));
-            String filetxt = new String(Files.readAllBytes(Paths.get("java/files/index.txt")));
-            byte image[] = new byte[(int)im.length()];
-            fis.read(image);
+
 
 
             while(true){
@@ -41,7 +29,7 @@ public class WServer {
                 Conexio html;
                 html = new Conexio();
                 try {
-                    html.run(clientSocket,fileIndex,filetxt,image,is,os,in);
+                    html.run(clientSocket);
                     html.join();
                  }catch (Exception e){
                     e.printStackTrace();
