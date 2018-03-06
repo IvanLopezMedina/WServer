@@ -113,8 +113,7 @@ public class Connection extends Thread {
 
             //Si es asci se usa un inputstream de la clase asciinputstream que tiene modificado el metodo read para quitar los tags html
             if (asc){
-                InputStream inputaux = new FileInputStream("java/files" + filename);
-                InputStream inputasci = new AsciiInputStream(inputaux);
+                InputStream inputasci = new AsciiInputStream(new FileInputStream("java/files" + filename););
                 int c;
                 while ((c = inputasci.read()) != -1) out.write(c);
             }
