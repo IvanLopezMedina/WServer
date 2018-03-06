@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -12,7 +14,19 @@ public class Connection extends Thread {
 
     PrintWriter out;
 
-    public void transf_txt(String header_t[], String filename, OutputStream os,boolean tags[]){
+    //Filtres ASC/ZIP/GZIP
+    boolean asc = false;
+    boolean zip = false;
+    boolean gzip = false;
+
+    //Files
+    String filename;
+
+    //Net Comm
+    OutputStream os;
+    String req_header;
+
+    public void transf_txt(String header_t[]){
         try {
             //read source file
             String filesize = new String(Files.readAllBytes(Paths.get("java/files" + filename)));
@@ -27,17 +41,17 @@ public class Connection extends Thread {
         }catch (NullPointerException e){
             System.out.println("Excepcio no controlada");
         }catch (NoSuchFileException e){
-            not_found(os);
+            not_found();
             //Currently not working
         }catch (IOException e){
-            not_found(os);
+            not_found();
             e.printStackTrace();
         }
         out.flush();
         out.close();
     }
 
-    public void transf_html(String header_t[], String filename, OutputStream os,boolean tags[]){
+    public void transf_html(String header_t[]){
         try {
             //read source file
             String filesize = new String(Files.readAllBytes(Paths.get("java/files" + filename)));
@@ -53,17 +67,17 @@ public class Connection extends Thread {
         }catch (NullPointerException e){
             System.out.println("Excepcio no controlada");
         }catch (NoSuchFileException e){
-            not_found(os);
+            not_found();
             //Currently not working
         }catch (IOException e){
-            not_found(os);
+            not_found();
             e.printStackTrace();
         }
         out.flush();
         out.close();
     }
 
-    public void transf_file(String header_t[],  String filename, BufferedOutputStream os,boolean tags[]){
+    public void transf_file(String header_t[]){
         try {
             System.out.println("Requesting File: "+filename);
             //Open file
@@ -109,7 +123,7 @@ public class Connection extends Thread {
         }catch (NullPointerException e){
             System.out.println("Excepcio no controlada");
         }catch (NoSuchFileException e){
-            not_found(os);
+            not_found();
             //Currently not working
         }catch(IOException e){
             e.printStackTrace();
@@ -131,7 +145,7 @@ public class Connection extends Thread {
         return file;
     }
 
-    public void not_found(OutputStream os){
+    public void not_found(){
         out = new PrintWriter(new OutputStreamWriter(os));
         out.println("HTTP/1.1 404 Not Found");
         out.println("Fi transferencia");
@@ -144,7 +158,6 @@ public class Connection extends Thread {
     public void run (Socket clientSocket) {
         //Definitions
         InputStream is;
-        BufferedOutputStream os;
         BufferedReader in;
 
         try {
@@ -155,23 +168,21 @@ public class Connection extends Thread {
             String header = in.readLine();
             //Read browser request
             System.out.println(header);
-            //Filtres tags
-            boolean tags[] = new boolean[3];
 
             //Filter ASCI
             if (header.contains("asc=true")){
                 System.out.println("ASCI CODE");
-                tags[0] = true;
+                asc = true;
             }
             //Filter ZIP
             if (header.contains("zip=true")){
                 System.out.println("ZIP CODE");
-                tags[1] = true;
+                zip = true;
             }
             //Filter GZIP
             if (header.contains("gzip=true")){
                 System.out.println("GZIP CODE");
-                tags[2] = true;
+                gzip = true;
             }
 
             //Control del thread
@@ -182,12 +193,12 @@ public class Connection extends Thread {
             String filename = get_filename(header_t);
             if (header.contains("favicon.ico")) { }
             else if (header.contains(".txt")){
-               transf_txt(header_t,filename,os,tags);
+               transf_txt(header_t);
             }
             else if (header.contains(".html")){
-                transf_html(header_t,filename,os,tags);
+                transf_html(header_t);
             } else {
-                transf_file(header_t,filename,os,tags);
+                transf_file(header_t);
             }
 
             os.flush();
