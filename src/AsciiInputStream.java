@@ -26,9 +26,9 @@ public class AsciiInputStream extends FilterInputStream {
         int c = this.in.read();
         if (c == -1) return -1;
         if (c == '<') {
-            int c2;
-            while ((c2 = this.in.read()) != '>') {
-                if (c2 == -1) return -1; //cuando se llega al final
+            int c;
+            while ((c = this.in.read()) != '>') {
+                if (c == -1) return -1; //cuando se llega al final
             }
             return this.read();
         }

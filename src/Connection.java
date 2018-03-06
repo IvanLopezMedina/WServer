@@ -1,15 +1,8 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import jdk.internal.util.xml.impl.Input;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.lang.*;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
-import java.net.HttpURLConnection.*;
-import java.net.URL;
+import java.nio.file.*;
 
 public class Connection extends Thread {
 
@@ -59,8 +52,6 @@ public class Connection extends Thread {
                 gzip = true;
             }
 
-            //Control del thread
-
             //First Header Split we get requestmethod, filename, protocol
             header_t = header.split(" ");
             //get file name
@@ -70,9 +61,6 @@ public class Connection extends Thread {
         }
 
     }
-
-
-
 
     public void transf_txt(){
         try {
@@ -109,11 +97,12 @@ public class Connection extends Thread {
             System.out.println("Fitxer HTML: "+filename.substring(1));
             out.println("Content-Type: text/html\n");
             //Print file
-            out.println(filesize);
-
+            InputStream is = new FileInputStream("java/files" + filename);
+            int s;
+            while ((s = is.read()) != -1) out.write(s);
             //Si es asci se usa un inputstream de la clase asciinputstream que tiene modificado el metodo read para quitar los tags html
             if (asc){
-                InputStream inputasci = new AsciiInputStream(new FileInputStream("java/files" + filename););
+                InputStream inputasci = new AsciiInputStream(new FileInputStream("java/files" + filename));
                 int c;
                 while ((c = inputasci.read()) != -1) out.write(c);
             }
@@ -187,7 +176,6 @@ public class Connection extends Thread {
         }catch(IOException e){
             e.printStackTrace();
         }
-
     }
 
     //Returns Filename for when there are tags in the Header(asc,zip...)
@@ -212,10 +200,7 @@ public class Connection extends Thread {
         out.close();
     }
 
-
-    //Client main method
     public void run () {
-
         try {
             System.out.println(" Header " + filename);
             if (filename.contains("favicon.ico")) {
@@ -226,12 +211,10 @@ public class Connection extends Thread {
             } else {
                 transf_file();
             }
-
             os.flush();
             os.close();
         }catch (IOException e){
             e.printStackTrace();
         }
-
     }
 }
