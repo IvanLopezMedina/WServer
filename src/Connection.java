@@ -32,9 +32,9 @@ public class Connection extends Thread {
     String header_t[];
 
 
-    public Connection (){
+    public Connection (Socket Socket){
         try {
-
+            this.clientSocket = Socket;
             is = clientSocket.getInputStream();
             os = new BufferedOutputStream(clientSocket.getOutputStream());
             // Buffer read file data
@@ -155,6 +155,9 @@ public class Connection extends Thread {
             else if (filename.contains("gif")){
                 tipus = "image/gif";
             }
+            else if (filename.contains("txt")) {
+                tipus = "text/plain";
+            }
             pi.print("Content-Type: "+tipus+"\n");
             pi.print("Content-Disposition: filename=\""+filename.substring(1)+"\"\n");
             pi.print("Content-Length: "+(int)f.length()+"\n\n");
@@ -209,7 +212,7 @@ public class Connection extends Thread {
 
             if (req_header.contains("favicon.ico")) {
             } else if (req_header.contains(".txt")) {
-                transf_txt();
+                transf_file();
             } else if (req_header.contains(".html")) {
                 transf_html();
             } else {

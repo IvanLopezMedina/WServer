@@ -17,9 +17,9 @@ public class WServer {
                 clientSocket = serverSocket.accept();
                 //Created a new connection with the server
                 Connection con;
-                con = new Connection();
+                con = new Connection(clientSocket);
                 try {
-                    con.run(clientSocket);
+                    con.run();
                     con.join();
                  }catch (Exception e){
                     e.printStackTrace();
