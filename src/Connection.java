@@ -12,6 +12,8 @@ import java.net.URL;
 
 public class Connection extends Thread {
 
+    Socket clientSocket;
+
     PrintWriter out;
 
     //Filtres ASC/ZIP/GZIP
@@ -21,12 +23,58 @@ public class Connection extends Thread {
 
     //Files
     String filename;
+    InputStream is;
+    BufferedReader in;
 
     //Net Comm
     OutputStream os;
     String req_header;
+    String header_t[];
 
-    public void transf_txt(String header_t[]){
+
+    public Connection (){
+        try {
+
+            is = clientSocket.getInputStream();
+            os = new BufferedOutputStream(clientSocket.getOutputStream());
+            // Buffer read file data
+            in = new BufferedReader(new InputStreamReader(is));
+            String header = in.readLine();
+            //Read browser request
+            System.out.println(header);
+
+            //Filter ASCI
+            if (header.contains("asc=true")) {
+                System.out.println("ASCI CODE");
+                asc = true;
+            }
+            //Filter ZIP
+            if (header.contains("zip=true")) {
+                System.out.println("ZIP CODE");
+                zip = true;
+            }
+            //Filter GZIP
+            if (header.contains("gzip=true")) {
+                System.out.println("GZIP CODE");
+                gzip = true;
+            }
+
+            //Control del thread
+
+            //First Header Split we get requestmethod, filename, protocol
+            header_t = header.split(" ");
+            //get file name
+            filename = get_filename();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+    public void transf_txt(){
         try {
             //read source file
             String filesize = new String(Files.readAllBytes(Paths.get("java/files" + filename)));
@@ -51,7 +99,7 @@ public class Connection extends Thread {
         out.close();
     }
 
-    public void transf_html(String header_t[]){
+    public void transf_html(){
         try {
             //read source file
             String filesize = new String(Files.readAllBytes(Paths.get("java/files" + filename)));
@@ -77,7 +125,7 @@ public class Connection extends Thread {
         out.close();
     }
 
-    public void transf_file(String header_t[]){
+    public void transf_file(){
         try {
             System.out.println("Requesting File: "+filename);
             //Open file
@@ -132,7 +180,7 @@ public class Connection extends Thread {
     }
 
     //Returns Filename for when there are tags in the Header(asc,zip...)
-    public String get_filename(String header_t[]){
+    public String get_filename(){
         String file = new String();
         if(header_t[1].contains("?")) {
             int i = header_t[1].indexOf('?');
@@ -155,55 +203,22 @@ public class Connection extends Thread {
 
 
     //Client main method
-    public void run (Socket clientSocket) {
-        //Definitions
-        InputStream is;
-        BufferedReader in;
+    public void run () {
 
         try {
-            is = clientSocket.getInputStream();
-            os = new BufferedOutputStream(clientSocket.getOutputStream());
-            // Buffer read file data
-            in = new BufferedReader(new InputStreamReader(is));
-            String header = in.readLine();
-            //Read browser request
-            System.out.println(header);
 
-            //Filter ASCI
-            if (header.contains("asc=true")){
-                System.out.println("ASCI CODE");
-                asc = true;
-            }
-            //Filter ZIP
-            if (header.contains("zip=true")){
-                System.out.println("ZIP CODE");
-                zip = true;
-            }
-            //Filter GZIP
-            if (header.contains("gzip=true")){
-                System.out.println("GZIP CODE");
-                gzip = true;
-            }
-
-            //Control del thread
-
-            //First Header Split we get requestmethod, filename, protocol
-            String header_t[] = header.split(" ");
-            //get file name
-            String filename = get_filename(header_t);
-            if (header.contains("favicon.ico")) { }
-            else if (header.contains(".txt")){
-               transf_txt(header_t);
-            }
-            else if (header.contains(".html")){
-                transf_html(header_t);
+            if (req_header.contains("favicon.ico")) {
+            } else if (req_header.contains(".txt")) {
+                transf_txt();
+            } else if (req_header.contains(".html")) {
+                transf_html();
             } else {
-                transf_file(header_t);
+                transf_file();
             }
 
             os.flush();
             os.close();
-        } catch (IOException e) {
+        }catch (IOException e){
             e.printStackTrace();
         }
 
