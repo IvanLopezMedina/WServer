@@ -1,4 +1,5 @@
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import jdk.internal.util.xml.impl.Input;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -28,13 +29,12 @@ public class Connection extends Thread {
 
     //Net Comm
     OutputStream os;
-    String req_header;
     String header_t[];
 
 
-    public Connection (){
+    public Connection (Socket Socket){
         try {
-
+            this.clientSocket = Socket;
             is = clientSocket.getInputStream();
             os = new BufferedOutputStream(clientSocket.getOutputStream());
             // Buffer read file data
@@ -110,6 +110,14 @@ public class Connection extends Thread {
             out.println("Content-Type: text/html\n");
             //Print file
             out.println(filesize);
+
+            //Si es asci se usa un inputstream de la clase asciinputstream que tiene modificado el metodo read para quitar los tags html
+            if (asc){
+                InputStream inputaux = new FileInputStream("java/files" + filename);
+                InputStream inputasci = new AsciiInputStream(inputaux);
+                int c;
+                while ((c = inputasci.read()) != -1) out.write(c);
+            }
             out.println("Fi transferencia");
 
         }catch (NullPointerException e){
@@ -155,6 +163,9 @@ public class Connection extends Thread {
             else if (filename.contains("gif")){
                 tipus = "image/gif";
             }
+            else if (filename.contains("txt")) {
+                tipus = "text/plain";
+            }
             pi.print("Content-Type: "+tipus+"\n");
             pi.print("Content-Disposition: filename=\""+filename.substring(1)+"\"\n");
             pi.print("Content-Length: "+(int)f.length()+"\n\n");
@@ -166,6 +177,7 @@ public class Connection extends Thread {
             int bytesRead;
             while ( (bytesRead = in.read( buffer )) != -1 ) {
                 os.write( buffer, 0, bytesRead );
+
             }
             pi.close();
         }catch (NullPointerException e){
@@ -206,11 +218,11 @@ public class Connection extends Thread {
     public void run () {
 
         try {
-
-            if (req_header.contains("favicon.ico")) {
-            } else if (req_header.contains(".txt")) {
+            System.out.println(" Header " + filename);
+            if (filename.contains("favicon.ico")) {
+            } else if (filename.contains(".txt")) {
                 transf_txt();
-            } else if (req_header.contains(".html")) {
+            } else if (filename.contains(".html")) {
                 transf_html();
             } else {
                 transf_file();
