@@ -1,6 +1,7 @@
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 
 //Notas: Sobreescribir el metodo read. Envez de leer un caracter sobrecargar
@@ -16,21 +17,36 @@ public class AsciiInputStream extends FilterInputStream {
      *           this instance is to be created without an underlying stream.
      */
 
-    protected AsciiInputStream(InputStream in) {
+    public AsciiInputStream(InputStream in) {
         super(in);
         this.in = in;
-
     }
-    public int read() throws IOException {
 
+    StringBuilder buffer = new StringBuilder();
+    String chain = "<!--";
+    String endchain = "-->";
+    Boolean startcomment = false;
+    Boolean endcomment = false;
+
+    public int read() throws IOException {
         int c = this.in.read();
-        if (c == -1) return -1;
+        buffer.append(((char) c));
         if (c == '<') {
-            int c2;
-            while ((c2 = this.in.read()) != '>') {
-                if (c2 == -1) return -1; //cuando se llega al final
+            while ((c = this.in.read()) != '>') {
+                if (c == -1){
+                    return -1; //cuando se llega al final
+                }else{
+                    buffer.append(((char) c));
+                    if(buffer.toString().contains(chain)){
+                        while(!buffer.toString().contains(endchain)){
+                            c = this.in.read();
+                            buffer.append(((char) c));
+                        }
+                        buffer = new StringBuilder();
+                    }
+                }
             }
-            return this.read();
+            if (c == '>') c = this.in.read();
         }
         return c;
     }
