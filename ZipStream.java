@@ -1,6 +1,7 @@
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -33,26 +34,36 @@ public class ZipStream {
 
     void compress_write(byte file[], int filesize, Request req, BufferedInputStream buff){
         try {
-            ZipEntry ini_zip = new ZipEntry(req.filename.substring(1));
-            //LOOP for transfering file
-            zip.putNextEntry(ini_zip);
             byte[] buffer = new byte[filesize];
-            int bytesRead;
-            while ((bytesRead = buff.read(buffer,0,1)) != -1) {
-                zip.write(buffer,0,1);
-                if(is_gzip && !is_zip){
-                    gzip.write(buffer,0,1);
+            if(is_zip) {
+                ZipEntry ini_zip = new ZipEntry(req.filename.substring(1));
+                //LOOP for transfering file
+                zip.putNextEntry(ini_zip);
+                int bytesRead;
+                int num = 0;
+                while ((bytesRead = buff.read(buffer, 0, 1)) != -1) {
+                    System.out.println("Escribiendo caracter num "+num+": "+(char)buffer[0]);
+                    zip.write(buffer, 0, 1);
+                    if (is_gzip && !is_zip) {
+                        gzip.write(buffer, 0, 1);
+                    }
+                    num++;
                 }
+                zip.closeEntry();
+                zip.flush();
+                zip.close();
             }
-            if(is_zip) zip.flush();
-            zip.closeEntry();
-            zip.close();
-            if(is_gzip) gzip.flush();
-            gzip.close();
+            if(is_gzip) {
+                gzip.flush();
+                gzip.close();
+            }
+
         }catch (IOException e){
             e.printStackTrace();
         }
     }
 
 
+
 }
+

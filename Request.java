@@ -39,61 +39,58 @@ public class Request {
     }
 
     void send_Response(OutputStream os){
-        header_response = new PrintWriter(new OutputStreamWriter(os));
-        File aux = new File("java/files"+filename);
-        if(aux.exists()){
-            header_response.println("HTTP/1.1 200 OK");
-            //Tipus String contains the string to append to the HTTP Response Header
-            if (filename.contains("png")){
-                tipus = "image/png";
-            }
-            else if (filename.contains("txt")){
-                tipus = "text/plain";
-            }
-            else if (filename.contains("html")){
-                tipus = "text/html";
-            }
-            else if (filename.contains("jpeg")){
-                tipus = "image/jpeg";
+        try {
+            header_response = new PrintWriter(new OutputStreamWriter(os));
+            File aux = new File("java/files" + filename);
+            if (aux.exists()) {
+                header_response.println("HTTP/1.1 200 OK");
+                //Tipus String contains the string to append to the HTTP Response Header
+                if (filename.contains("png")) {
+                    tipus = "image/png";
+                } else if (filename.contains("txt")) {
+                    tipus = "text/plain";
+                } else if (filename.contains("html")) {
+                    tipus = "text/html";
+                } else if (filename.contains("jpeg")) {
+                    tipus = "image/jpeg";
 
-            }
-            else if (filename.contains("gif")){
-                tipus = "image/gif";
-            }
-            else if (filename.contains("txt")) {
-                tipus = "text/plain";
-            }
-            if (gzip == true){
-                tipus = "applications/x-gzip";
-            }
-            if (zip == true){
-                tipus = "applications/zip";
-            }
-            header_response.print("Content-Type: "+tipus+"\n");
-            if (zip == true && gzip == false) {
-                header_response.print("Content-Disposition: filename=\""+filename.substring(1)+".zip\"\n");
-                header_response.print("Content-Length: "+(int)aux.length()+"\n\n");
-            }
-            else if (zip == false && gzip == true){
-                header_response.print("Content-Disposition: filename=\""+filename.substring(1)+".gz\"\n");
-                header_response.print("Content-Length: "+(int)aux.length()+"\n\n");
-            }
-            else if (zip == true && gzip == true){
-                header_response.print("Content-Disposition: filename=\""+filename.substring(1)+".zip.gz\"\n");
-                header_response.print("Content-Length: "+(int)aux.length()+"\n\n");
-            }
-            else if (!tipus.contains("text")&&!tipus.contains("html")){
-                header_response.print("Content-Disposition: filename=\""+filename.substring(1)+"\"\n");
-                header_response.print("Content-Length: "+(int)aux.length()+"\n\n");
-            }
-            else {
-                header_response.print('\n');
-            }
+                } else if (filename.contains("gif")) {
+                    tipus = "image/gif";
+                } else if (filename.contains("txt")) {
+                    tipus = "text/plain";
+                }
+                if (zip == true) {
+                    tipus = "applications/zip";
+                }
+                if (gzip == true) {
+                    tipus = "applications/x-gzip";
+                }
 
-        }else{
-            not_found(os);
+                header_response.print("Content-Type: " + tipus + "\n");
+                if (zip == true && gzip == false) {
+                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".zip\"\n");
+                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                    System.out.println(aux.length());
+                } else if (zip == false && gzip == true) {
+                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".gz\"\n");
+                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                } else if (zip == true && gzip == true) {
+                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".zip.gz\"\n");
+                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                } else if (!tipus.contains("text") && !tipus.contains("html")) {
+                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + "\"\n");
+                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                } else {
+                    header_response.print('\n');
+                }
+
+            } else {
+                not_found(os);
+            }
+            header_response.flush();
+        }catch(NullPointerException e){
+            e.printStackTrace();
         }
-        header_response.flush();
 
 
     }
