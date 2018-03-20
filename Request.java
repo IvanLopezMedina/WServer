@@ -1,11 +1,12 @@
-import javax.print.attribute.standard.NumberUp;
+
 import java.io.*;
-import java.nio.file.*;
+
 public class Request {
     String header;
     String header_t[];
     String filename;
     String tipus;
+    File file;
     boolean asc;
     boolean zip;
     boolean gzip;
@@ -17,6 +18,7 @@ public class Request {
             this.header = header;
             header_t = header.split(" ");
             filename = get_filename();
+            file = new File("java/files"+filename);
 
         }catch (NullPointerException e){
             e.printStackTrace();
@@ -47,8 +49,7 @@ public class Request {
     void send_Response(OutputStream os){
         try {
             header_response = new PrintWriter(new OutputStreamWriter(os));
-            File aux = new File("java/files" + filename);
-            if (aux.exists()) {
+            if (file.exists()) {
                 header_response.println("HTTP/1.1 200 OK");
                 //Tipus String contains the string to append to the HTTP Response Header
                 if (filename.contains("png")) {
@@ -78,18 +79,18 @@ public class Request {
                     if (asc == true && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
                 }
                 if (zip == true && gzip == false) {
-                    header_response.print(".zip\"\n\n");
-                    //header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
-                    System.out.println(aux.length());
+                    header_response.print(".zip\"\n");
+                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
+                    System.out.println(file.length());
                 } else if (zip == false && gzip == true) {
                     header_response.print( ".gz\"\n");
-                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
                 } else if (zip == true && gzip == true) {
                     header_response.print( ".zip.gz\"\n");
-                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
                 } else if (!tipus.contains("text") && !tipus.contains("html")) {
                     header_response.print('\n');
-                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
                 } else {
                     header_response.print('\n');
                     header_response.print('\n');

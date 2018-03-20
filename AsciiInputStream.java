@@ -1,8 +1,6 @@
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-
 
 //Notas: Sobreescribir el metodo read. Envez de leer un caracter sobrecargar
 public class AsciiInputStream extends FilterInputStream {

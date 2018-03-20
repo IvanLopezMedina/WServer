@@ -1,10 +1,8 @@
-import java.awt.image.BufferedImage;
+
 import java.io.*;
 import java.net.*;
 import java.lang.*;
-import java.nio.file.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+
 
 public class Connection extends Thread {
 
@@ -38,7 +36,7 @@ public class Connection extends Thread {
             req = new Request( in.readLine());
             req.filter_Req();
             filename = req.get_filename();
-            file = new FileIO(req);
+            file = new FileIO();
 
 
 
