@@ -23,8 +23,6 @@ public class AsciiInputStream extends FilterInputStream {
     StringBuilder buffer = new StringBuilder();
     String chain = "<!--";
     String endchain = "-->";
-    Boolean startcomment = false;
-    Boolean endcomment = false;
 
     public int read() throws IOException {
         int c = this.in.read();

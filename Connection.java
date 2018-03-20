@@ -2,12 +2,13 @@
 import java.io.*;
 import java.net.*;
 import java.lang.*;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
 
 
 public class Connection extends Thread {
 
     Socket clientSocket;
-
     PrintWriter out;
 
     //Files
@@ -18,10 +19,8 @@ public class Connection extends Thread {
     //Net Comm
     OutputStream os;
     String header_t[];
-    FileIO file;
 
     Request req;
-
 
     public Connection (Socket Socket){
         try {
@@ -31,19 +30,14 @@ public class Connection extends Thread {
             // Buffer read file data
             in = new BufferedReader(new InputStreamReader(is));
 
-
             //read and filter header
             req = new Request( in.readLine());
             req.filter_Req();
             filename = req.get_filename();
-            file = new FileIO();
-
-
 
         }catch (IOException e){
             e.printStackTrace();
         }
-
     }
 
     public void run () {
@@ -51,8 +45,22 @@ public class Connection extends Thread {
             System.out.println(" Header " + filename);
             if (filename.contains("favicon.ico")) {
             } else {
+
                 req.send_Response(os);
-                file.write_stream(os,req);
+                FileInputStream fis = new FileInputStream(req.file);
+                if (req.isGzip()){
+                    os = new GZIPOutputStream(os);
+
+                }
+                if (req.isZip()){
+                    os = new ZipOutputStream(os);
+                }
+
+                int c;
+                while ((c = fis.read()) != -1){
+                    os.write(c);
+                }
+                os.flush();
             }
             os.flush();
             os.close();

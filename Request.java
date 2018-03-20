@@ -25,15 +25,15 @@ public class Request {
         }
     }
 
-    boolean is_Asc(){
+    boolean isAsc(){
         return asc;
     }
 
-    boolean is_Zip(){
+    boolean isZip(){
         return zip;
     }
 
-    boolean is_Gzip(){
+    boolean isGzip(){
         return gzip;
     }
 
@@ -60,7 +60,6 @@ public class Request {
                     tipus = "text/html";
                 } else if (filename.contains("jpeg")) {
                     tipus = "image/jpeg";
-
                 } else if (filename.contains("gif")) {
                     tipus = "image/gif";
                 } else if (filename.contains("txt")) {
