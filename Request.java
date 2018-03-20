@@ -101,21 +101,25 @@ public class Request {
     }
 
     void filter_Req(){
-        //Filter ASCI
-        if (header.contains("asc=true")) {
-            System.out.println("ASCI CODE");
-            asc = true;
-        }
-        if (header.contains("gzip=true")) {
-            System.out.println("GZIP CODE");
-            gzip = true;
-            header = header.replace("gzip=true","");
+        try {
+            //Filter ASCI
+            if (header.contains("asc=true")) {
+                System.out.println("ASCI CODE");
+                asc = true;
+            }
+            if (header.contains("gzip=true")) {
+                System.out.println("GZIP CODE");
+                gzip = true;
+                header = header.replace("gzip=true", "");
 
-        }
-        //Filter ZIP
-        if (header.contains("zip=true")) {
-            System.out.println("ZIP CODE");
-            zip = true;
+            }
+            //Filter ZIP
+            if (header.contains("zip=true")) {
+                System.out.println("ZIP CODE");
+                zip = true;
+            }
+        }catch(NullPointerException e){
+            e.printStackTrace();
         }
 
 
@@ -124,13 +128,18 @@ public class Request {
     //Returns Filename for when there are tags in the Header(asc,zip...)
     public String get_filename(){
         String file = new String();
-        if(header_t[1].contains("?")) {
-            int i = header_t[1].indexOf('?');
-            file = header_t[1].substring(0,i);
-            System.out.println(file);
-        }
-        else{
-            file = header_t[1];
+        try {
+
+            if (header_t[1].contains("?")) {
+                int i = header_t[1].indexOf('?');
+                file = header_t[1].substring(0, i);
+                System.out.println(file);
+            } else {
+                file = header_t[1];
+            }
+
+        }catch(NullPointerException e){
+            e.printStackTrace();
         }
         return file;
     }

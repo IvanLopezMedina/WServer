@@ -16,16 +16,15 @@ public class FileIO {
     String filename;
     File file;
     BufferedInputStream in;
-    FileInputStream is;
     ZipStream zout;
 
     FileIO (Request req) {
         try {
             filename = req.get_filename();
             file = new File("java/files" + filename);
+
             if(file.exists()) {
                 in = new BufferedInputStream(new FileInputStream(file));
-                is = new FileInputStream(file);
             }
 
         }catch (IOException e){

@@ -29,7 +29,7 @@ public class Connection extends Thread {
         try {
             this.clientSocket = Socket;
             is = clientSocket.getInputStream();
-            os = new BufferedOutputStream(clientSocket.getOutputStream());
+            os = clientSocket.getOutputStream();
             // Buffer read file data
             in = new BufferedReader(new InputStreamReader(is));
 

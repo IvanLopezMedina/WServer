@@ -55,11 +55,12 @@ public class ZipStream {
                 if(is_zip){
                     zip.closeEntry();
                     zip.flush();
-                    zip.close();
+                    zip.finish();
+
                 }
             if(is_gzip) {
                 gzip.flush();
-                gzip.close();
+                gzip.finish();
             }
 
         }catch (IOException e){
@@ -80,7 +81,7 @@ public class ZipStream {
                 zip.write(bytes, 0, bytes.length);
                 zip.closeEntry();
                 zip.flush();
-                zip.close();
+                zip.finish();
             }
             else{
 
