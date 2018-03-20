@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.lang.*;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
@@ -45,19 +46,20 @@ public class Connection extends Thread {
             System.out.println(" Header " + filename);
             if (filename.contains("favicon.ico")) {
             } else {
-
                 req.send_Response(os);
-                FileInputStream fis = new FileInputStream(req.file);
-                if (req.isGzip()){
-                    os = new GZIPOutputStream(os);
+                is = new FileInputStream(req.file);
 
+                if (req.isGzip()){
+                    os = new FileOutputStream(filename+".gz");
+                    os = new GZIPOutputStream(os);
                 }
                 if (req.isZip()){
+                    os = new FileOutputStream(filename+".zip");
                     os = new ZipOutputStream(os);
+                    ((ZipOutputStream) os).putNextEntry(new ZipEntry(req.filename));
                 }
-
                 int c;
-                while ((c = fis.read()) != -1){
+                while ((c = is.read()) != -1){
                     os.write(c);
                 }
                 os.flush();
