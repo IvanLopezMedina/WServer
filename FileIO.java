@@ -57,8 +57,13 @@ public class FileIO {
                 }
                 else {
                     zout = new ZipStream(os,req.is_Gzip(),req.is_Zip());
-                    zout.compress_write(buffer, (int) file.length(), req, in);
 
+                    if (req.filename.contains("txt")||req.filename.contains("html")){
+                        zout.compress_txt(req);
+                    }
+                    else{
+                        zout.compress_write(buffer, (int) file.length(), req, in);
+                    }
 
                 }
 

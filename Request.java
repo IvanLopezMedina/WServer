@@ -1,3 +1,4 @@
+import javax.print.attribute.standard.NumberUp;
 import java.io.*;
 import java.nio.file.*;
 public class Request {
@@ -12,9 +13,13 @@ public class Request {
     PrintWriter header_response;
 
     Request(String header){
-        this.header = header;
-        header_t = header.split(" ");
-        filename = get_filename();
+        try {
+            this.header = header;
+            header_t = header.split(" ");
+            filename = get_filename();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     boolean is_Asc(){
@@ -68,8 +73,8 @@ public class Request {
 
                 header_response.print("Content-Type: " + tipus + "\n");
                 if (zip == true && gzip == false) {
-                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".zip\"\n");
-                    header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
+                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".zip\"\n\n");
+                    //header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
                     System.out.println(aux.length());
                 } else if (zip == false && gzip == true) {
                     header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".gz\"\n");
