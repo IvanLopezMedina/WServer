@@ -38,8 +38,16 @@ public class FileIO {
     void write_stream(OutputStream os,Request req){
         try{
             if(req.get_tipus().contains("text") && !req.is_Zip() && !req.is_Gzip() || req.get_tipus().contains("html") && !req.is_Zip() && !req.is_Gzip()){
-                PrintWriter p = new PrintWriter(os);
-                p.println(new String(Files.readAllBytes(Paths.get("java/files"+filename))));
+                PrintWriter p = new PrintWriter(new OutputStreamWriter(os));
+                if (req.is_Asc()){
+                    InputStream inputaux = new FileInputStream("java/files"+req.get_filename());
+                    InputStream inputasc = new AsciiInputStream(inputaux);
+                    int c;
+                    while ((c = inputasc.read())!= -1) p.write(c);
+                }
+                else{
+                    p.println(new String(Files.readAllBytes(Paths.get("java/files"+filename))));
+                }
                 p.flush();
 
             }

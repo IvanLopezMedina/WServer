@@ -17,6 +17,7 @@ public class Request {
             this.header = header;
             header_t = header.split(" ");
             filename = get_filename();
+
         }catch (NullPointerException e){
             e.printStackTrace();
         }
@@ -72,20 +73,25 @@ public class Request {
                 }
 
                 header_response.print("Content-Type: " + tipus + "\n");
+                if (zip == true || gzip == true || (!tipus.contains("text")&&!tipus.contains("html"))){
+                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1));
+                    if (asc == true && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
+                }
                 if (zip == true && gzip == false) {
-                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".zip\"\n\n");
+                    header_response.print(".zip\"\n\n");
                     //header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
                     System.out.println(aux.length());
                 } else if (zip == false && gzip == true) {
-                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".gz\"\n");
+                    header_response.print( ".gz\"\n");
                     header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
                 } else if (zip == true && gzip == true) {
-                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + ".zip.gz\"\n");
+                    header_response.print( ".zip.gz\"\n");
                     header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
                 } else if (!tipus.contains("text") && !tipus.contains("html")) {
-                    header_response.print("Content-Disposition: filename=\"" + filename.substring(1) + "\"\n");
+                    header_response.print('\n');
                     header_response.print("Content-Length: " + (int) aux.length() + "\n\n");
                 } else {
+                    header_response.print('\n');
                     header_response.print('\n');
                 }
 
@@ -128,19 +134,21 @@ public class Request {
     //Returns Filename for when there are tags in the Header(asc,zip...)
     public String get_filename(){
         String file = new String();
-        try {
 
-            if (header_t[1].contains("?")) {
-                int i = header_t[1].indexOf('?');
-                file = header_t[1].substring(0, i);
-                System.out.println(file);
-            } else {
-                file = header_t[1];
+            try {
+
+                if (header_t[1].contains("?")) {
+                    int i = header_t[1].indexOf('?');
+                    file = header_t[1].substring(0, i);
+                    System.out.println(file);
+                } else {
+                    file = header_t[1];
+                }
+
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
 
-        }catch(NullPointerException e){
-            e.printStackTrace();
-        }
         return file;
     }
 

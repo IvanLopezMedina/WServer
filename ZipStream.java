@@ -74,7 +74,18 @@ public class ZipStream {
             File file = new File("java/files"+req.filename);
             FileInputStream fis = new FileInputStream(file);
             byte []bytes = new byte[(int)file.length()];
-            fis.read(bytes);
+            if (req.is_Asc()){
+                InputStream inputasc = new AsciiInputStream(fis);
+                int c;
+                StringBuilder aux = new StringBuilder();
+                while ((c = inputasc.read())!= -1) aux.append((char)c);
+                System.out.println(aux);
+                String aux2 = aux.toString();
+                bytes = aux2.getBytes();
+            }
+            else {
+                fis.read(bytes);
+            }
 
             if(is_zip) {
                 this.zip.putNextEntry(new ZipEntry(file.getName()));
