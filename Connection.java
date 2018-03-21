@@ -34,38 +34,45 @@ public class Connection extends Thread {
             //read and filter header
             req = new Request( in.readLine());
             req.filter_Req();
-            filename = req.get_filename();
+            filename = req.getFilename();
+
+            filename=filename.substring(1);
+            System.out.println("Filename after" + filename);
 
         }catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    public void run () {
-        try {
-            System.out.println(" Header " + filename);
-            if (filename.contains("favicon.ico")) {
-            } else {
-                req.send_Response(os);
-                is = new FileInputStream(req.file);
+    public void send() throws IOException{
+        System.out.println(" Header " + filename);
+        if (filename.contains("favicon.ico")) {
+        } else {
+            req.send_Response(os);
+            is = new FileInputStream(req.file);
 
-                if (req.isGzip()){
-                    os = new FileOutputStream(filename+".gz");
-                    os = new GZIPOutputStream(os);
-                }
-                if (req.isZip()){
-                    os = new FileOutputStream(filename+".zip");
-                    os = new ZipOutputStream(os);
-                    ((ZipOutputStream) os).putNextEntry(new ZipEntry(req.filename));
-                }
-                int c;
-                while ((c = is.read()) != -1){
-                    os.write(c);
-                }
-                os.flush();
+            if(req.isAsc()) is = new AsciiInputStream(new FileInputStream(req.file));
+
+            if (req.isGzip()) os = new GZIPOutputStream(os);
+
+            if (req.isZip()){
+                os = new ZipOutputStream(os);
+                ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename));
+            }
+
+            int c;
+            while ((c = is.read()) != -1){
+                os.write(c);
             }
             os.flush();
-            os.close();
+        }
+        os.flush();
+        os.close();
+    }
+
+    public void run () {
+        try {
+            this.send();
         }catch (IOException e){
             e.printStackTrace();
         }

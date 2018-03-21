@@ -17,7 +17,7 @@ public class Request {
         try {
             this.header = header;
             header_t = header.split(" ");
-            filename = get_filename();
+            filename = getFilename();
             file = new File("java/files"+filename);
 
         }catch (NullPointerException e){
@@ -132,9 +132,8 @@ public class Request {
     }
 
     //Returns Filename for when there are tags in the Header(asc,zip...)
-    public String get_filename(){
+    public String getFilename(){
         String file = new String();
-
             try {
 
                 if (header_t[1].contains("?")) {
