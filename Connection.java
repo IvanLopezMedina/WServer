@@ -2,12 +2,14 @@
 import java.io.*;
 import java.net.*;
 import java.lang.*;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 
 public class Connection extends Thread {
 
     Socket clientSocket;
-
     PrintWriter out;
 
     //Files
@@ -18,10 +20,8 @@ public class Connection extends Thread {
     //Net Comm
     OutputStream os;
     String header_t[];
-    FileIO file;
 
     Request req;
-
 
     public Connection (Socket Socket){
         try {
@@ -31,30 +31,48 @@ public class Connection extends Thread {
             // Buffer read file data
             in = new BufferedReader(new InputStreamReader(is));
 
-
             //read and filter header
             req = new Request( in.readLine());
-            req.filter_Req();
-            filename = req.get_filename();
-            file = new FileIO();
-
-
+            req.filterReq();
+            filename = req.getFilename();
+            if (!filename.isEmpty()) filename = filename.substring(1);
 
         }catch (IOException e){
             e.printStackTrace();
+        }catch (NullPointerException e){
+            e.printStackTrace();
         }
-
     }
 
-    public void run () {
+    public void send() throws IOException{
+        System.out.println(" Header " + filename);
+        if (filename.contains("favicon.ico")) {
+        } else {
+            req.sendResponse(os);
+            is = new FileInputStream(req.file);
 
-            System.out.println(" Header " + filename);
-            if (filename.contains("favicon.ico")) {
-            } else {
-                req.send_Response(os);
-                file.write_stream(os,req);
+            if(req.isAsc() && (filename.contains(".html") || filename.contains("txt"))) is = new AsciiInputStream(new FileInputStream(req.file));
+
+            if (req.isGzip()) os = new GZIPOutputStream(os);
+
+            if (req.isZip()){
+                os = new ZipOutputStream(os);
+                ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename +".asc"));
             }
 
+            int c;
+            while ((c = is.read()) != -1) os.write(c);
+            os.flush();
+        }
+        os.flush();
+        os.close();
+    }
 
+    public void run (){
+        try {
+            this.send();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
