@@ -74,25 +74,24 @@ public class Request {
                 }
 
                 header_response.print("Content-Type: " + tipus + "\n");
-                if (zip == true || gzip == true || (!tipus.contains("text")&&!tipus.contains("html"))){
+                if (zip == true || gzip == true ){
                     header_response.print("Content-Disposition: filename=\"" + filename.substring(1));
                     if (asc == true && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
                 }
                 if (zip == true && gzip == false) {
                     header_response.print(".zip\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
                     System.out.println(file.length());
                 } else if (zip == false && gzip == true) {
                     header_response.print( ".gz\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
                 } else if (zip == true && gzip == true) {
                     header_response.print( ".zip.gz\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
                 } else if (!tipus.contains("text") && !tipus.contains("html")) {
                     header_response.print('\n');
                     header_response.print("Content-Length: " + (int) file.length() + "\n\n");
                 } else {
-                    header_response.print('\n');
                     header_response.print('\n');
                 }
 

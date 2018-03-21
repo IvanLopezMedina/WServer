@@ -47,17 +47,14 @@ public class Connection extends Thread {
     }
 
     public void run () {
-        try {
+
             System.out.println(" Header " + filename);
             if (filename.contains("favicon.ico")) {
             } else {
                 req.send_Response(os);
                 file.write_stream(os,req);
             }
-            os.flush();
-            os.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+
+
     }
 }
