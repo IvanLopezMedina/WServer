@@ -1,4 +1,3 @@
-
 import java.io.*;
 
 public class Request {
@@ -42,11 +41,11 @@ public class Request {
         header_response.println("HTTP/1.1 404 Not Found");
     }
 
-    String get_tipus (){
+    String getTipus (){
         return tipus;
     }
 
-    void send_Response(OutputStream os){
+    void sendResponse(OutputStream os){
         try {
             header_response = new PrintWriter(new OutputStreamWriter(os));
             if (file.exists()) {
@@ -58,7 +57,7 @@ public class Request {
                     tipus = "text/plain";
                 } else if (filename.contains("html")) {
                     tipus = "text/html";
-                } else if (filename.contains("jpeg")) {
+                } else if (filename.contains("jpeg") || filename.contains("jpg")) {
                     tipus = "image/jpeg";
                 } else if (filename.contains("gif")) {
                     tipus = "image/gif";
@@ -73,25 +72,25 @@ public class Request {
                 }
 
                 header_response.print("Content-Type: " + tipus + "\n");
-                if (zip == true || gzip == true || (!tipus.contains("text")&&!tipus.contains("html"))){
+                if ((zip || gzip)){
                     header_response.print("Content-Disposition: filename=\"" + filename.substring(1));
-                    if (asc == true && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
+                    if (asc && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
                 }
-                if (zip == true && gzip == false) {
+                if (zip && !gzip) {
                     header_response.print(".zip\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
                     System.out.println(file.length());
-                } else if (zip == false && gzip == true) {
+                } else if (!zip && gzip) {
                     header_response.print( ".gz\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
-                } else if (zip == true && gzip == true) {
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
+                } else if (zip && gzip) {
                     header_response.print( ".zip.gz\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
-                } else if (!tipus.contains("text") && !tipus.contains("html")) {
+                    if (asc && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
+                } else if (!tipus.contains("text") && !tipus.contains("html") && (zip || gzip)) {
                     header_response.print('\n');
                     header_response.print("Content-Length: " + (int) file.length() + "\n\n");
                 } else {
-                    header_response.print('\n');
                     header_response.print('\n');
                 }
 
@@ -106,7 +105,7 @@ public class Request {
 
     }
 
-    void filter_Req(){
+    void filterReq(){
         try {
             //Filter ASCI
             if (header.contains("asc=true")) {

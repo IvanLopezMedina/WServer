@@ -33,13 +33,13 @@ public class Connection extends Thread {
 
             //read and filter header
             req = new Request( in.readLine());
-            req.filter_Req();
+            req.filterReq();
             filename = req.getFilename();
-
-            filename=filename.substring(1);
-            System.out.println("Filename after" + filename);
+            if (!filename.isEmpty()) filename = filename.substring(1);
 
         }catch (IOException e){
+            e.printStackTrace();
+        }catch (NullPointerException e){
             e.printStackTrace();
         }
     }
@@ -48,29 +48,27 @@ public class Connection extends Thread {
         System.out.println(" Header " + filename);
         if (filename.contains("favicon.ico")) {
         } else {
-            req.send_Response(os);
+            req.sendResponse(os);
             is = new FileInputStream(req.file);
 
-            if(req.isAsc()) is = new AsciiInputStream(new FileInputStream(req.file));
+            if(req.isAsc() && (filename.contains(".html") || filename.contains("txt"))) is = new AsciiInputStream(new FileInputStream(req.file));
 
             if (req.isGzip()) os = new GZIPOutputStream(os);
 
             if (req.isZip()){
                 os = new ZipOutputStream(os);
-                ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename));
+                ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename +".asc"));
             }
 
             int c;
-            while ((c = is.read()) != -1){
-                os.write(c);
-            }
+            while ((c = is.read()) != -1) os.write(c);
             os.flush();
         }
         os.flush();
         os.close();
     }
 
-    public void run () {
+    public void run (){
         try {
             this.send();
         }catch (IOException e){
