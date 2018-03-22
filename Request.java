@@ -24,7 +24,9 @@ public class Request {
         }
     }
 
-    boolean isAsc(){ return asc; }
+    boolean isAsc(){
+        return asc;
+    }
 
     boolean isZip(){
         return zip;
@@ -62,15 +64,15 @@ public class Request {
                 } else if (filename.contains("txt")) {
                     tipus = "text/plain";
                 }
-                if (zip) {
+                if (zip == true) {
                     tipus = "applications/zip";
                 }
-                if (gzip) {
+                if (gzip == true) {
                     tipus = "applications/x-gzip";
                 }
 
                 header_response.print("Content-Type: " + tipus + "\n");
-                if (zip || gzip || (!tipus.contains("text")&&!tipus.contains("html"))){
+                if ((zip || gzip)){
                     header_response.print("Content-Disposition: filename=\"" + filename.substring(1));
                     if (asc && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
                 }
@@ -80,7 +82,7 @@ public class Request {
                     System.out.println(file.length());
                 } else if (!zip && gzip) {
                     header_response.print( ".gz\"\n");
-                    header_response.print("Content-Length: " + (int) file.length() + "\n\n");
+                    header_response.print("Content-Length: " + (int) file.length()+1 + "\n\n");
                 } else if (zip && gzip) {
                     header_response.print( ".zip.gz\"\n");
                     if (asc && (header.contains("txt") || header.contains("html"))) header_response.print(".asc");
