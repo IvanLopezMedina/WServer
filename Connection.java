@@ -57,7 +57,12 @@ public class Connection extends Thread {
 
             if (req.isZip()){
                 os = new ZipOutputStream(os);
-                ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename +".asc"));
+                if (req.isAsc()){
+                    ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename +".asc"));
+                }else{
+                    ((ZipOutputStream) os).putNextEntry(new ZipEntry(filename));
+                }
+
             }
 
             int c;
