@@ -108,7 +108,9 @@ public class Request {
                     tipus = "image/gif";
                 } else if (filename.contains("txt")) {
                     tipus = "text/plain";
-                }
+                } else if (filename.contains("xml")) {
+                    tipus = "application/xml";
+                } else tipus = "application/octet-stream";
                 if (zip == true) {
                     tipus = "applications/zip";
                 }
